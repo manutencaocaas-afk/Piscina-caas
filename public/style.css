@@ -35,7 +35,7 @@ h1, h2 {
   margin-bottom: 20px;
 }
 
-/* Formulário (regra existente — mantida) */
+/* Formulário */
 form {
   display: flex;
   flex-wrap: wrap;
@@ -51,7 +51,7 @@ form input, form button {
   border-radius: 6px;
 }
 
-/* Botão principal (regras existentes — mantidas) */
+/* Botão principal */
 button {
   background: #002855; /* azul escuro */
   color: white;
@@ -144,9 +144,7 @@ table tr:nth-child(even) {
   color: #002855;
 }
 
-/* ========== REFINOS DO FORMULÁRIO (ADICIONADOS) ========== */
-
-/* Usa a versão em grid apenas quando o form tiver a classe .form-grid */
+/* ========= Refinos formulário ========= */
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -154,7 +152,6 @@ table tr:nth-child(even) {
   margin-bottom: 25px;
 }
 
-/* Grupos com label + input */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -164,7 +161,6 @@ table tr:nth-child(even) {
   grid-column: span 2;
 }
 
-/* Labels acima dos inputs */
 .form-group label {
   font-weight: 600;
   margin-bottom: 6px;
@@ -172,7 +168,6 @@ table tr:nth-child(even) {
   font-size: 14px;
 }
 
-/* Inputs dentro do form-grid ganham foco mais elegante */
 .form-group input {
   padding: 12px 14px;
   border: 1px solid #ccc;
@@ -187,102 +182,136 @@ table tr:nth-child(even) {
   outline: none;
 }
 
-/* Botão de submit ocupando a linha inteira quando usado com .full-width */
 .form-grid .full-width button {
   width: 100%;
   padding: 12px;
   font-size: 16px;
 }
 
-/* Responsivo: no celular fica uma coluna só */
-@media (max-width: 600px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-  .form-group.full-width {
-    grid-column: span 1;
-  }
-}
-/* Responsividade geral */
+/* Responsivo geral */
 @media (max-width: 1024px) {
   .container {
     margin: 20px;
     padding: 20px;
   }
-
-  h1 {
-    font-size: 1.8rem;
-  }
-
-  h2 {
-    font-size: 1.4rem;
-  }
+  h1 { font-size: 1.8rem; }
+  h2 { font-size: 1.4rem; }
 }
 
 @media (max-width: 768px) {
-  /* Formulário em uma coluna */
   .form-grid {
     grid-template-columns: 1fr;
   }
-
   .form-group.full-width {
     grid-column: span 1;
   }
-
-  /* Botão ocupa toda a largura */
   .form-grid button {
     width: 100%;
   }
-
-  /* Tabela com scroll horizontal */
   table {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
   }
-
   table th, table td {
     font-size: 14px;
     padding: 8px;
   }
+  #calendar {
+    width: 100%;
+    min-height: 600px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+  }
 
-  /* Ajuste do calendário */
-#calendar {
-  width: 100%;
-  min-height: 600px; /* força altura */
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 10px;
-}
+  /* 🔹 Calendário mais visível no mobile */
+  #calendar {
+    background: #fdfdfd;
+    border: 2px solid #002855;
+  }
+  .fc .fc-toolbar-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #002855;
+  }
+  .fc .fc-button {
+    background-color: #002855;
+    color: #fff;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 0.85rem;
+  }
+  .fc .fc-button:hover {
+    background-color: #fdb913;
+    color: #002855;
+  }
+  .fc-event {
+    background-color: #fdb913 !important;
+    color: #fff !important;
+    border-radius: 6px;
+    padding: 3px 5px;
+    font-size: 0.8rem;
+  }
+  .fc-timegrid-slot-label {
+    color: #333;
+    font-weight: bold;
+    font-size: 0.75rem;
+  }
 }
 
 @media (max-width: 480px) {
-  h1 {
-    font-size: 1.5rem;
-  }
-
-  h2 {
-    font-size: 1.2rem;
-  }
-
-  .logo-escola {
-    max-height: 60px;
-  }
-
-  .container {
-    padding: 15px;
-  }
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.2rem; }
+  .logo-escola { max-height: 60px; }
+  .container { padding: 15px; }
 }
-@media (max-width: 768px) {
-  #calendar {
-    width: 100% !important;
-    padding: 5px;
-    font-size: 0.85rem; /* reduz fonte para caber melhor */
-  }
-}
+
 .dica-horario {
   font-size: 12px;
   color: #555;
   margin-top: 4px;
 }
+@media (max-width: 768px) {
+  .fc-event {
+    background-color: #fffbfb !important; /* azul bem escuro */
+    color: #535353 !important;           /* texto branco */
+    border-radius: 6px;
+    padding: 3px 5px;
+    font-size: 0.8rem;
+  }
+
+  /* Cabeçalho da lista */
+  .fc-list-day {
+    background-color: #002855 !important; /* azul institucional */
+    color: #ffffff !important;
+    font-weight: bold;
+  }
+
+  /* Bordas do calendário */
+  #calendar {
+    background: #ffffff;
+    border: 2px solid #002855;
+  }
+}
+@media (max-width: 768px) {
+  /* Cabeçalho das datas (linhas dos dias) */
+  .fc-list-day {
+    background-color: #002855 !important; /* mesma cor do botão Agendar */
+    color: #ffffff !important;
+    font-weight: bold;
+    text-transform: capitalize;
+  }
+
+  /* Texto menor dentro das datas */
+  .fc-list-day-text {
+    color: #ffffff !important;
+  }
+
+  /* Separador da linha */
+  .fc-list-day-cushion {
+    background-color: #002855 !important;
+  }
+}
+

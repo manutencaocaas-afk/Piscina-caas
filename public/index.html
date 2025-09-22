@@ -7,10 +7,10 @@
 
   <link rel="stylesheet" href="style.css" />
 
-  <!-- CSS do FullCalendar -->
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
+  <!-- FullCalendar CSS -->
+  <link id="fc-cdn-css" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
 
-  <!-- JS do FullCalendar -->
+  <!-- FullCalendar JS -->
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 </head>
 <body>
@@ -21,8 +21,7 @@
     </header>
 
     <div class="stack">
-      <!-- Formulário -->
-      <form id="form-agendamento" class="form-grid">
+      <form id="form-agendamento" class="form-grid" autocomplete="off">
         <div class="form-group">
           <label for="professora">Nome da Professora</label>
           <input type="text" id="professora" required />
@@ -50,38 +49,52 @@
         </div>
       </form>
 
-      <!-- Calendário -->
       <section aria-labelledby="titulo-calendario">
         <h2 id="titulo-calendario">Calendário de Agendamentos</h2>
         <div id="calendar"></div>
       </section>
 
-      <!-- Lista -->
       <section aria-labelledby="titulo-lista">
         <h2 id="titulo-lista">Lista de Agendamentos</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Professora</th>
-              <th>Turma</th>
-              <th>Data</th>
-              <th>Início</th>
-              <th>Fim</th>
-            </tr>
-          </thead>
-          <tbody id="lista-agendamentos"></tbody>
-        </table>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Professora</th>
+                <th>Turma</th>
+                <th>Data</th>
+                <th>Início</th>
+                <th>Fim</th>
+              </tr>
+            </thead>
+            <tbody id="lista-agendamentos"></tbody>
+          </table>
+        </div>
       </section>
     </div>
   </div>
 
-  <!-- Supabase e script principal -->
+  <!-- Supabase e Script -->
   <script type="module" src="supabaseClient.js"></script>
   <script type="module" src="script.js"></script>
 
   <!-- Modal -->
-  <div id="modal" class="modal">
+  <div id="modal" class="modal" aria-hidden="true">
     <div class="modal-box" id="modal-content"></div>
   </div>
+
+  <!-- Script extra para tradução -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const calendarEl = document.getElementById("calendar");
+
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: "timeGridWeek",
+        locale: "pt-br" // força tradução para português
+      });
+
+      calendar.render();
+    });
+  </script>
 </body>
 </html>
