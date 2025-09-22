@@ -1,6 +1,11 @@
 import { supabase } from "./supabaseClient.js";
 
-let calendar; // variável global para o calendário
+let calendar;
+
+function formatarData(iso) {
+  const [ano, mes, dia] = iso.split("-");
+  return `${dia}/${mes}/${ano}`;
+}
 
 async function carregarAgendamentos() {
   const { data: agendamentos, error } = await supabase
@@ -14,7 +19,6 @@ async function carregarAgendamentos() {
     return;
   }
 
-  // --- Atualiza a tabela ---
   const tbody = document.getElementById("lista-agendamentos");
   tbody.innerHTML = "";
 
@@ -23,22 +27,20 @@ async function carregarAgendamentos() {
     tr.innerHTML = `
       <td>${a.professora}</td>
       <td>${a.turma}</td>
-      <td>${a.data}</td>
+      <td>${formatarData(a.data)}</td>
       <td>${a.inicio}</td>
       <td>${a.fim}</td>
     `;
     tbody.appendChild(tr);
   });
 
-  // --- Prepara eventos para o calendário ---
   const eventos = agendamentos.map(a => {
-    // Normaliza hora para HH:MM (se vier HH:MM:SS, o FullCalendar aceita, mas vamos padronizar)
     const inicio = a.inicio?.slice(0,5) ?? a.inicio;
     const fim = a.fim?.slice(0,5) ?? a.fim;
 
     return {
       title: `${a.turma} - ${a.professora}`,
-      start: `${a.data}T${inicio}`, // ex: 2025-09-23T11:13
+      start: `${a.data}T${inicio}`,
       end: `${a.data}T${fim}`,
       extendedProps: {
         professora: a.professora,
@@ -50,13 +52,10 @@ async function carregarAgendamentos() {
     };
   });
 
-  console.log("Eventos para o calendário:", eventos); // debug: confira no console do navegador
+  console.log("Eventos para o calendário:", eventos);
 
   if (!calendar) {
     const calendarEl = document.getElementById("calendar");
-
-    // Em builds globais, esses plugins já estão disponíveis
-    // mas indicar explicitamente ajuda em alguns ambientes.
     const dayGridPlugin = FullCalendar.dayGridPlugin || FullCalendar.DayGrid;
     const interactionPlugin = FullCalendar.interactionPlugin || FullCalendar.Interaction;
 
@@ -64,7 +63,6 @@ async function carregarAgendamentos() {
       initialView: "dayGridMonth",
       locale: "pt-br",
       buttonText: { today: "Hoje" },
-      // plugins podem ser omitidos no index.global, mas manter por segurança:
       plugins: [dayGridPlugin, interactionPlugin].filter(Boolean),
       events: eventos,
       displayEventTime: true,
@@ -77,23 +75,12 @@ async function carregarAgendamentos() {
     });
 
     calendar.render();
-
-    // Recalcula quando a janela muda
-    window.addEventListener("resize", () => {
-      calendar.updateSize();
-    });
-
-    // Recalcula depois de um pequeno delay (corrige render após CSS/Fonts)
+    window.addEventListener("resize", () => calendar.updateSize());
     setTimeout(() => calendar.updateSize(), 50);
-
   } else {
-    // Atualização robusta das fontes de eventos
     calendar.removeAllEventSources();
-    calendar.addEventSource(eventos);
-    // Em alguns cenários, ajuda também limpar eventos “órfãos”
     calendar.removeAllEvents();
     calendar.addEventSource(eventos);
-
     calendar.updateSize();
   }
 }
@@ -101,11 +88,27 @@ async function carregarAgendamentos() {
 document.getElementById("form-agendamento").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const professora = document.getElementById("professora").value;
-  const turma = document.getElementById("turma").value;
+  const professora = document.getElementById("professora").value.trim();
+  const turma = document.getElementById("turma").value.trim();
   const data = document.getElementById("data").value;
   const inicio = document.getElementById("inicio").value;
   const fim = document.getElementById("fim").value;
+
+  // Validação de horário
+  const horaInicio = parseInt(inicio.split(":")[0]);
+  const horaFim = parseInt(fim.split(":")[0]);
+
+  if (horaInicio < 7 || horaInicio > 18 || horaFim < 7 || horaFim > 18) {
+    alert("Horário fora do período permitido (07:00 às 18:00).");
+    return;
+  }
+
+  // Validação de dia da semana
+  const diaSemana = new Date(data).getDay(); // 0 = domingo, 6 = sábado
+  if (diaSemana === 0 || diaSemana === 6) {
+    alert("Não é permitido agendar aos finais de semana.");
+    return;
+  }
 
   const { error } = await supabase
     .from("agendamentos")
@@ -121,7 +124,6 @@ document.getElementById("form-agendamento").addEventListener("submit", async (e)
 
 carregarAgendamentos();
 
-// --- Função para abrir o modal ---
 function abrirModal(props) {
   const modal = document.getElementById("modal");
   const modalContent = document.getElementById("modal-content");
@@ -130,7 +132,7 @@ function abrirModal(props) {
     <h3>📌 Detalhes do Agendamento</h3>
     <p><strong>Professora:</strong> ${props.professora}</p>
     <p><strong>Turma:</strong> ${props.turma}</p>
-    <p><strong>Data:</strong> ${props.data}</p>
+    <p><strong>Data:</strong> ${formatarData(props.data)}</p>
     <p><strong>Início:</strong> ${props.inicio}</p>
     <p><strong>Fim:</strong> ${props.fim}</p>
     <button id="fecharModal">Fechar</button>
